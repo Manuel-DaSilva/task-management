@@ -5,6 +5,7 @@ import { TaskRepository } from './task.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Task } from './task.entity';
 import { TaskStatus } from './task-status.enum';
+import { User } from '../auth/user.entity';
 
 @Injectable()
 export class TasksService {
@@ -15,13 +16,16 @@ export class TasksService {
     ) {}
 
 
-    async getTasks(filterDto: GetTaskFilterDto): Promise<Task[]> {
-        return await this.taskRepository.getTasks(filterDto);
+    async getTasks(filterDto: GetTaskFilterDto, user: User): Promise<Task[]> {
+        return await this.taskRepository.getTasks(filterDto, user);
     }
 
-    async getTaskById(id: number): Promise<Task> {
+    async getTaskById(id: number, user: User): Promise<Task> {
 
-        const found = await this.taskRepository.findOne(id);
+        // here if the requested task does not belong to the user that requested the service
+        // a 404 response will be sent, this is to prevent the atacker to know if the task 
+        // exists on the database
+        const found = await this.taskRepository.findOne( { where: { id, userId: user.id } } );
 
         if (!found) {
             throw new NotFoundException(`Id ${id} not found`);
@@ -30,23 +34,25 @@ export class TasksService {
         return found;
     }
 
-    async createTask(createTaskDto: CreateTaskDto): Promise<Task> {
+    async createTask(createTaskDto: CreateTaskDto, user: User): Promise<Task> {
 
-       return this.taskRepository.createTask(createTaskDto);
+       return this.taskRepository.createTask(createTaskDto, user);
     }
 
-    async deleteTask(id: number): Promise<void> {
+    async deleteTask(id: number, user: User): Promise<void> {
 
-        const result = await this.taskRepository.delete(id);
+        const result = await this.taskRepository.delete( { id, userId: user.id} );
 
         if (result.affected === 0) {
             throw new NotFoundException(`Id ${id} not found`);
         }
     }
 
-    async updateTaskStatus(id: number, status: TaskStatus): Promise<Task> {
+    async updateTaskStatus(id: number, status: TaskStatus, user: User): Promise<Task> {
 
-        const task = await this.getTaskById(id);
+        // same situation that getting task by id, if the requested task doesnt belong to the user
+        // it is not returned, insted a 404 is returned by getTaskById
+        const task = await this.getTaskById(id, user);
         task.status = status;
         await task.save();
 
