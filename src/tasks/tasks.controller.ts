@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards, UsePipes, ValidationPipe, Logger } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { TaskStatus } from './task-status.enum';
 import { CreateTaskDto } from './dto/create-task.dto';
@@ -12,8 +12,6 @@ import { GetUser } from 'src/auth/get-user.decorator';
 @Controller('tasks')
 @UseGuards(AuthGuard())
 export class TasksController {
-
-    private logger = new Logger('TaskController');
 
     constructor(private tasksService: TasksService) {}
 

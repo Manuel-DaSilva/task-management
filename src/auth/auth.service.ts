@@ -24,11 +24,11 @@ export class AuthService {
 
         const user = await this.userRepository.validateUserPassword(authCredentialsDto);
         
-        if (!user.username) {
+        if (!user) {
             throw new UnauthorizedException('Invalid credentials')
         }
 
-        const payload: JwtPayload = { username: user.username };
+        const payload: JwtPayload = { id: user.id };
 
         const accessToken = await this.jwtService.sign(payload);
 

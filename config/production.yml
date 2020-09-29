@@ -1,0 +1,4 @@
+db:
+  synchronize: false
+
+# JWT information and DB information will be include in environment variables

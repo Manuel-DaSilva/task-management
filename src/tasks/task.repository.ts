@@ -23,6 +23,7 @@ export class TaskRepository extends Repository<Task> {
             query.andWhere('task.title LIKE :search OR task.description LIKE :search', { search: `%${search}%` });
         }
 
+        // TODO add try catch and log the error properly using the logger
         const tasks = await query.getMany();
 
         return tasks;
@@ -37,6 +38,8 @@ export class TaskRepository extends Repository<Task> {
         task.status = TaskStatus.OPEN;
         task.user = user;
 
+
+        // TODO add try catch and log the error properly using the logger
         await task.save();
 
         // removing user from the response

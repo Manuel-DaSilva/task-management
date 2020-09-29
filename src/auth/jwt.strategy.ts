@@ -5,6 +5,7 @@ import { Strategy, ExtractJwt } from 'passport-jwt';
 import { JwtPayload } from './jwt-payload.interface';
 import { UserRepository } from './auth.repository';
 import { User } from './user.entity';
+import * as config from 'config';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -16,15 +17,15 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         // this validates the signature of the token
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-            secretOrKey: 'topSecret',
+            secretOrKey: config.get('jwt.secret'),
         });
     }
 
     async validate(payload: JwtPayload): Promise<User> {
         // at this point the payload is already validated from the strategy
-        const { username } = payload;
+        const { id } = payload;
 
-        const user = await this.userRepository.findOne({ username });
+        const user = await this.userRepository.findOne(id);
 
         // removing password and salt for navigating on the auth decorator
         user.password = '';
