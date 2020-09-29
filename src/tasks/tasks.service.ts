@@ -57,11 +57,10 @@ export class TasksService {
         // same situation that getting task by id, if the requested task doesnt belong to the user
         // it is not returned, insted a 404 is returned by getTaskById
         const task = await this.getTaskById(id, user);
-        task.status = status;
 
+        task.status = status;
         // TODO add try catch and log the error properly using the logger
         await task.save();
-
         return task;
     }   
 }

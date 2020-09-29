@@ -10,7 +10,9 @@ export class UserRepository extends Repository<User> {
     async signUp(authCredentialsDto: AuthCredentialsDto): Promise<void> {
 
         const { username, password } = authCredentialsDto;
-        const user = new User();
+        // as this is an user repository, calling this.create will generate a new
+        // instance of the user enrity
+        const user = this.create();
 
         user.username = username;
         user.salt = await bcrypt.genSalt();;
@@ -20,6 +22,7 @@ export class UserRepository extends Repository<User> {
 
             await user.save();
         } catch (error) {
+
             if (error.code === '23505') {
 
                 throw new ConflictException('Username already exists')
@@ -42,6 +45,7 @@ export class UserRepository extends Repository<User> {
 
             return user;
         } else {
+
             return null;
         }
     }

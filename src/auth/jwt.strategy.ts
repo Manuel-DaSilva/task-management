@@ -3,7 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Strategy, ExtractJwt } from 'passport-jwt';
 import { JwtPayload } from './jwt-payload.interface';
-import { UserRepository } from './auth.repository';
+import { UserRepository } from './user.repository';
 import { User } from './user.entity';
 import * as config from 'config';
 
@@ -27,12 +27,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
         const user = await this.userRepository.findOne(id);
 
-        // removing password and salt for navigating on the auth decorator
-        user.password = '';
-        user.salt = '';
-        
         if (!user) {
+            
             throw new UnauthorizedException();
+        } else {
+            // removing password and salt for navigating on the auth decorator
+            user.password = '';
+            user.salt = '';
         }
 
         return user;
