@@ -2,7 +2,9 @@ import { Body, Controller, Post, Req, UseGuards, UsePipes, ValidationPipe } from
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { AuthService } from './auth.service';
 import { UserResponseDto } from './dto/user-response.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
 
